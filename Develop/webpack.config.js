@@ -3,11 +3,12 @@ const config = {
         app: "./src/app/js"
     },
     output: {
-        path: _dirname + "/public",
-        filename: "[name].bundle.js"
+        path:__dirname + "/public/dist",
+        filename: "bundle.js"
     },
-    mode: "production",
+    mode: "development",
 };
 
 module.exports = config;
+
 
