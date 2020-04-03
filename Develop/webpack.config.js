@@ -1,11 +1,11 @@
 const WebpackPwaManifest = require("webpack-pwa-manifest")
-const path = require( "path");
+const path = require("path");
 const config = {
     entry: {
-        app: "./src/index/js"
+        app: "./public/index.js"
     },
     output: {
-        path:__dirname + "/public/dist",
+        path: __dirname + "/public/dist",
         filename: "[name].bundle.js"
     },
     mode: "production",
@@ -20,7 +20,7 @@ const config = {
             display: "standalone",
             icons: [{
                 src: path.resolve(__dirname, "public/icons/icon-192x192.png"),
-                size: [192,515],
+                size: [192, 512],
             }]
         })
     ],
@@ -32,13 +32,13 @@ const config = {
                 use: {
                     loader: "babel-loader",
                     options: {
-                        presets: ["@babel/preset=env"]
+                        presets: ["@babel/preset-env"]
                     }
                 }
             }
         ]
     }
-    
+
 };
 
 module.exports = config;
