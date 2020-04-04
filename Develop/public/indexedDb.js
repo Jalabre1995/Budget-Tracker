@@ -1,53 +1,48 @@
-
-
-//Check the indexedDB for browser support///
-let db = request.result;
-
-const request = window.indexedDB.open('budget');
-request.onupgradeneeded = (e) => {
-    const bugetStore = db.createObjectStore('pending');
-};
-
-request.onsuccess =(e) => {
-    const db = target.result;
-
-    if(navigator.onLine) {
-        checkedDatabase();
+export function checkForIndexedDb(){
+    if (!window.indexedDB) {
+        console.log("Your browser doesn't support a stale verison of IndexedDB.");
+        return false;
     }
-};
-
-request.onerror = (e) => {
-    console.log('error'); 
-};
-
-function saveRecord(record) {
-    const transaction = db.transaction(['pending'], 'readwrite');
-    ///access your pending object store///
-    const pendingStore = transaction.objectStore('pending');
+    return true;
 }
+export function useIndexedDB(databaseName, storeName, method, object) {
+    return new Promise((resolve, reject) => {
+        const request = window.indexedDB.open(databaseName);
+        let db,
+        tx,
+        store;
 
-function checkedDatabase() {
-    //Open a transaction on your pending db///
-    ///access your pending object store///
-    //get all records from store and set the variable///
+        request.onupgradeneeded = function(e) {
+            const db = request.result;
+            db.createObjectStore(storeName, {autoIncrement: true});
 
-    getAll.onsuccess = () => {
-        if(getAll.result.lenth > 0) {
-            fetch('/api/transaction/bulk', {
-                method: "POST",
-                body: JSON.stringify(getAll.result),
-                headers: {
-                    Accept: 'application/json, text/plain, */*',
-                    'content-Type': 'application/json'
-                }
-            })
-            .then(response => response.json())
-            .then(() => {
-                
-            });
-        }
-    }
+        };
+        request.onerror = function(e) {
+            console.log("There was an error");
+        };
+        request.onsuccess = function(e) {
+            db = request.result;
+            tx = db.transaction(storeName, "readwrite");
+            store = tx.objectStore(storeName);
+
+            db.onerror = function(e) {
+                console.log("error");
+            };
+            if(method === "add"){
+                store.add(object);
+            }
+            if(method === "get") {
+                const all = store.getSAll();
+                all.onsuccess = function(){
+                    resolve(all.result);
+                };
+            }
+            if (method === 'clear') {
+                store.clear();
+            }
+            tx.oncomplete = function() {
+                db.close();
+            };
+        };
+    });
 }
-
-/// listen to the app coming back online///
-window.addEventListener('online', checkedDatabase);
